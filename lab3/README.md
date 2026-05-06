@@ -45,6 +45,55 @@ python main.py
 - `output/revenue.csv` — Total revenue by category
 - `output/daily_sales.csv` — Daily order counts
 
+## Airflow Orchestration
+
+An Airflow DAG is included for pipeline orchestration.
+
+### Setup Airflow
+
+```bash
+# Install Airflow
+pip install apache-airflow
+
+# Initialize Airflow database
+airflow db init
+
+# Create admin user
+airflow users create \
+    --username admin \
+    --password admin \
+    --firstname Admin \
+    --lastname User \
+    --role Admin \
+    --email admin@example.com
+```
+
+### Run with Airflow
+
+```bash
+# Copy DAG to Airflow dags folder
+cp pipeline/dags/retail_pipeline_dag.py ~/airflow/dags/
+
+# Update data_path in the DAG file to your absolute path
+
+# Start Airflow
+airflow standalone
+
+# Or start scheduler and webserver separately:
+# airflow scheduler
+# airflow webserver -p 8080
+
+# Access UI at http://localhost:8080
+# Username: admin, Password: admin
+```
+
+### DAG Tasks
+
+1. **load_orders** → Load CSV data
+2. **clean_data** → Remove duplicates, fill nulls
+3. **transform_data** → Calculate revenue and daily sales
+4. **save_outputs** → Write CSV files
+
 ## Tests
 
 ```bash
@@ -71,6 +120,9 @@ The `--ai` flag enables runtime JSON parameter generation:
 ```
 pipeline/
 ├── main.py                 # Entrypoint with AI integration
+├── dags/                   # Airflow orchestration
+│   ├── __init__.py
+│   └── retail_pipeline_dag.py
 ├── genai/
 │   ├── __init__.py
 │   ├── ollama_client.py    # HTTP client for Ollama
