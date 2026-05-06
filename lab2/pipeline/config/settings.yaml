@@ -1,0 +1,7 @@
+app_name: HealthcareMedallion
+input_csv: data/patients.csv
+bronze_path: output/bronze
+silver_path: output/silver
+gold_path: output/gold
+# Incremental watermark: include visits strictly after this date (lab pattern uses visit_date > watermark).
+last_run_date: "2023-12-31"
