@@ -573,7 +573,6 @@ python -m pytest tests -v
 
 ### Lab 8 — Prefect Orchestration
 - ✅ **Task retries**: Automatic retry with exponential backoff
-- ✅ **Task caching**: Avoid reprocessing with input hashing
 - ✅ **Pure functions**: Testable without orchestrator
 - ✅ **Flow composition**: Clean DAG dependencies
 - ✅ **AI retry config**: Configurable retry counts

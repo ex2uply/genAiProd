@@ -80,14 +80,11 @@ python pipeline.py
    - `clean`: 2 retries
    - `transform`: 1 retry
 
-2. **Task Caching**: Results cached for 1 hour to avoid reprocessing
-   - `ingest` uses `task_input_hash` for caching
-
-3. **Pure Functions**: Core logic is pure Pandas (testable without Prefect)
+2. **Pure Functions**: Core logic is pure Pandas (testable without Prefect)
    - `clean_shipments()`
    - `avg_delivery_by_destination()`
 
-4. **Flow Composition**: Clean DAG structure with dependencies
+3. **Flow Composition**: Clean DAG structure with dependencies
 
 ## AI Integration
 

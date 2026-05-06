@@ -14,7 +14,6 @@ from pathlib import Path
 
 import pandas as pd
 from prefect import flow, task
-from prefect.tasks import task_input_hash
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 LOG = logging.getLogger(__name__)
@@ -60,12 +59,7 @@ def avg_delivery_by_destination(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # Prefect tasks
-@task(
-    retries=3,
-    retry_delay_seconds=5,
-    cache_key_fn=task_input_hash,
-    cache_expiration_seconds=3600,
-)
+@task(retries=3, retry_delay_seconds=5)
 def ingest_data(data_path: Path) -> pd.DataFrame:
     """
     Ingest shipments data from CSV.
