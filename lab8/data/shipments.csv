@@ -1,0 +1,5 @@
+shipment_id,origin,destination,status,delivery_time
+1,Delhi,Mumbai,Delivered,2
+2,Bangalore,Chennai,Delivered,1
+3,Delhi,Kolkata,Pending,
+4,Mumbai,Pune,Delivered,1

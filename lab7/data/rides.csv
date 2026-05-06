@@ -1,0 +1,5 @@
+ride_id,driver_id,city,fare,ride_date
+1,101,Bangalore,200,2024-01-01
+2,102,Delhi,300,2024-01-01
+3,101,Bangalore,150,2024-01-02
+4,103,Mumbai,400,2024-01-02

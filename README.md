@@ -58,24 +58,61 @@ labSolution/
             ├── revenue.csv
             └── daily_sales.csv
 
-└── lab4/                     # Lab 4: Banking Pipeline (Modular Scaffold)
+├── lab4/                     # Lab 4: Banking Pipeline (Modular Scaffold)
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── data/
+│   │   └── transactions.csv
+│   └── banking_pipeline/
+│       ├── src/              # Modular package structure
+│       │   ├── main.py       # Entrypoint with AI fraud config
+│       │   ├── load.py
+│       │   ├── transform.py
+│       │   ├── fraud.py
+│       │   ├── save.py
+│       │   └── genai/        # Self-contained Ollama module
+│       ├── tests/
+│       │   └── test_pipeline.py
+│       └── output/
+│           ├── clean.csv
+│           └── agg.csv
+│
+├── lab5/                     # Lab 5: Telecom CDC + Watermark (Pandas)
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── watermark.txt         # Tracks last processed date
+│   ├── data/
+│   │   ├── cdr_day1.csv
+│   │   └── cdr_day2.csv
+│   ├── genai/                # Self-contained Ollama module
+│   └── tests/
+│
+├── lab6/                     # Lab 6: Schema Evolution (Pandas)
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── data/
+│   │   ├── products_day1.csv
+│   │   ├── products_day2.csv
+│   │   └── products_day3.csv
+│   ├── genai/                # Self-contained Ollama module
+│   └── tests/
+│
+├── lab7/                     # Lab 7: PySpark Optimization
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── data/
+│   │   ├── rides.csv
+│   │   └── drivers.csv
+│   ├── genai/                # Self-contained Ollama module
+│   └── tests/
+│
+└── lab8/                     # Lab 8: Prefect Auto DAG (Logistics)
     ├── README.md
     ├── requirements.txt
     ├── data/
-    │   └── transactions.csv
-    └── banking_pipeline/
-        ├── src/              # Modular package structure
-        │   ├── main.py       # Entrypoint with AI fraud config
-        │   ├── load.py
-        │   ├── transform.py
-        │   ├── fraud.py
-        │   ├── save.py
-        │   └── genai/        # Self-contained Ollama module
-        ├── tests/
-        │   └── test_pipeline.py
-        └── output/
-            ├── clean.csv
-            └── agg.csv
+    │   └── shipments.csv
+    ├── genai/                # Self-contained Ollama module
+    └── tests/
 ```
 
 ---
@@ -188,9 +225,100 @@ python -m pytest tests -v
 
 ---
 
+### Lab 5 — Telecom CDC + Watermark (Pandas)
+
+```bash
+cd lab5
+pip install -r requirements.txt
+
+# Standard mode (incremental)
+python pipeline.py
+
+# AI-enabled mode (with Ollama)
+python pipeline.py --ai --intent "Process with 2-day lookback for late data"
+
+# Run tests
+python -m pytest tests -v
+```
+
+**Outputs:**
+- `output/caller_summary.csv` — Total duration and call count per caller
+- `watermark.txt` — Updated with latest processed date
+
+---
+
+### Lab 6 — Schema Evolution (Pandas)
+
+```bash
+cd lab6
+pip install -r requirements.txt
+
+# Standard mode
+python pipeline.py
+
+# AI-enabled mode (with Ollama)
+python pipeline.py --ai --intent "Use 'N/A' for missing brands"
+
+# Run tests
+python -m pytest tests -v
+```
+
+**Outputs:**
+- `output/final_products.csv` — Merged products with unified schema
+
+---
+
+### Lab 7 — PySpark Optimization
+
+```bash
+cd lab7
+pip install -r requirements.txt
+
+# Optimized pipeline
+python pipeline.py
+
+# Baseline (no optimizations)
+python pipeline.py --baseline
+
+# AI-enabled mode
+python pipeline.py --ai --intent "Analyze Delhi with 8 partitions"
+
+# Run tests
+python -m pytest tests -v
+```
+
+**Outputs:**
+- `output/partitioned_final/` — Partitioned Parquet by city (optimized)
+- `output/baseline/` — Non-partitioned Parquet (baseline)
+
+**Prerequisites:** Java JDK 11 or 17
+
+---
+
+### Lab 8 — Prefect Auto DAG (Logistics)
+
+```bash
+cd lab8
+pip install -r requirements.txt
+
+# Run with Prefect
+python pipeline.py
+
+# AI-enabled mode
+python pipeline.py --ai --intent "Use mean for nulls, 5 retries"
+
+# Run tests (pure functions, no Prefect runtime)
+python -m pytest tests -v
+```
+
+**Outputs:**
+- `output/avg_delivery_by_destination.csv` — Mean delivery time by destination
+
+---
+
 ## 🤖 AI Integration (Ollama)
 
-All four labs support **runtime AI configuration** via Ollama:
+All eight labs support **runtime AI configuration** via Ollama:
 
 ### How It Works
 
@@ -222,6 +350,33 @@ The AI suggests fraud detection parameters:
 - `fraud_threshold`: Number above which transactions are flagged (default: 800)
 - `missing_fill`: Number to fill missing amounts (default: 0)
 
+### Lab 5 — AI CDC Configuration
+
+The AI suggests CDC parameters:
+- `watermark_date`: Suggested new watermark after processing
+- `processing_strategy`: `"incremental"` or `"full_reload"`
+- `lookback_days`: Days to look back for late-arriving data
+
+### Lab 6 — AI Schema Evolution
+
+The AI suggests default values for schema evolution:
+- `default_brand`: String for missing brand values
+- `default_discount`: Number for missing discount values
+
+### Lab 7 — AI Spark Optimization
+
+The AI suggests Spark optimization parameters:
+- `target_city`: Which city to filter and analyze
+- `use_broadcast`: Whether to use broadcast join
+- `repartition_count`: Number of partitions for parallelism
+
+### Lab 8 — AI Prefect DAG Config
+
+The AI suggests workflow parameters:
+- `null_fill`: How to handle null delivery times
+- `ingest_retries`: Retries for data ingestion
+- `clean_retries`: Retries for data cleaning
+
 ### Environment Variables
 
 | Variable | Description | Default |
@@ -247,6 +402,10 @@ python pipeline.py --ai  # Lab 1
 cd ../lab2/pipeline && python main.py --ai  # Lab 2
 cd ../lab3/pipeline && python main.py --ai  # Lab 3
 cd ../lab4/banking_pipeline/src && python main.py --ai  # Lab 4
+cd ../lab5 && python pipeline.py --ai  # Lab 5
+cd ../lab6 && python pipeline.py --ai  # Lab 6
+cd ../lab7 && python pipeline.py --ai  # Lab 7
+cd ../lab8 && python pipeline.py --ai  # Lab 8
 ```
 
 ---
@@ -304,6 +463,62 @@ python -m pytest tests -v
 - `test_clean_data()` — Data cleaning validation
 - `test_ai_fraud_spec()` — AI parameter application
 
+### Lab 5 Tests
+```bash
+cd lab5
+python -m pytest tests -v
+```
+
+**Test Coverage:**
+- `test_watermark_read_write()` — Watermark operations
+- `test_data_files_exist()` — Data file presence
+- `test_load_data_filters_by_watermark()` — CDC filtering
+- `test_transform_data()` — Aggregation logic
+- `test_pipeline_writes_output()` — Full execution
+- `test_ai_watermark_spec()` — AI parameter application
+
+### Lab 6 Tests
+```bash
+cd lab6
+python -m pytest tests -v
+```
+
+**Test Coverage:**
+- `test_day_snapshots_exist()` — Daily files presence
+- `test_merge_schema_unions_columns()` — Schema union
+- `test_pipeline_writes_final_products_csv()` — Full execution
+- `test_ai_schema_spec()` — AI parameter application
+
+### Lab 7 Tests
+```bash
+cd lab7
+python -m pytest tests -v
+```
+
+**Test Coverage:**
+- `test_data_files_exist()` — Data files presence
+- `test_spark_session_creation()` — Spark setup
+- `test_pipeline_runs()` — Optimized pipeline
+- `test_baseline_runs()` — Baseline comparison
+- `test_ai_optimization_spec()` — AI parameter application
+
+**Note:** First run may take 30-60s for Spark initialization
+
+### Lab 8 Tests
+```bash
+cd lab8
+python -m pytest tests -v
+```
+
+**Test Coverage:**
+- `test_data_file_exists()` — Data file presence
+- `test_clean_shipments()` — Pure clean function
+- `test_avg_delivery_by_destination()` — Pure transform function
+- `test_full_flow()` — Full pipeline flow
+- `test_ai_dag_spec()` — AI parameter application
+
+**Note:** Tests validate pure functions only—no Prefect runtime required. Fast execution.
+
 ---
 
 ## 📚 Concepts Demonstrated
@@ -337,6 +552,32 @@ python -m pytest tests -v
 - ✅ Aggregation by account
 - ✅ AI-augmented fraud configuration
 
+### Lab 5 — CDC + Watermark Patterns
+- ✅ **Change Data Capture**: Incremental loading with watermark
+- ✅ **Watermark tracking**: File-based date tracking
+- ✅ **Lookback mode**: Configurable days for late-arriving data
+- ✅ **Full reload support**: AI-configurable reset capability
+
+### Lab 6 — Schema Evolution
+- ✅ **Schema union**: Merging different column sets
+- ✅ **Null handling**: Filling missing columns with defaults
+- ✅ **Evolution tracking**: Day-by-day schema changes
+- ✅ **AI default values**: Configurable fill strategies
+
+### Lab 7 — Spark Optimization
+- ✅ **Broadcast joins**: Avoid shuffle for small tables
+- ✅ **Filter pushdown**: Reduce data before joins
+- ✅ **Repartitioning**: Optimize parallelism
+- ✅ **Output partitioning**: Query performance optimization
+- ✅ **Baseline comparison**: Before/after optimization metrics
+
+### Lab 8 — Prefect Orchestration
+- ✅ **Task retries**: Automatic retry with exponential backoff
+- ✅ **Task caching**: Avoid reprocessing with input hashing
+- ✅ **Pure functions**: Testable without orchestrator
+- ✅ **Flow composition**: Clean DAG dependencies
+- ✅ **AI retry config**: Configurable retry counts
+
 ### AI Integration Patterns
 - ✅ Natural language → structured JSON
 - ✅ Runtime parameter injection
@@ -353,7 +594,11 @@ python -m pytest tests -v
 4. **Run Prefect flow** — Understand pipeline orchestration
 5. **Try Lab 3** — Apply patterns to retail data workflow
 6. **Move to Lab 4** — Understand modular package architecture
-7. **Review `genai/` modules** — Learn safe AI integration patterns
+7. **Try Lab 5** — Master CDC with watermark patterns
+8. **Explore Lab 6** — Handle schema evolution scenarios
+9. **Optimize with Lab 7** — Learn Spark performance tuning
+10. **Orchestrate with Lab 8** — Build resilient workflows with Prefect
+11. **Review `genai/` modules** — Learn safe AI integration patterns
 
 ---
 
@@ -385,6 +630,36 @@ python -m pytest tests -v
 | `ImportError` for genai | Ensure running from `banking_pipeline/src` directory |
 | Fraud threshold not changing | Verify AI intent is being passed or use `--ai` flag |
 
+### Lab 5
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError: pandas` | `pip install -r requirements.txt` |
+| Watermark not updating | Check file permissions on `watermark.txt` |
+| No records processed | Verify `call_date` format is YYYY-MM-DD |
+
+### Lab 6
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError: pandas` | `pip install -r requirements.txt` |
+| Schema union fails | Ensure all CSVs have consistent data types |
+| Missing columns | Check that all day files are present |
+
+### Lab 7
+| Issue | Solution |
+|-------|----------|
+| `JAVA_HOME` / Spark errors | Install JDK 11/17 and add to PATH |
+| `java -version` fails | Verify Java installation |
+| PySpark import error | `pip install -r requirements.txt` |
+| First run slow | Normal—Spark takes 30-60s to initialize |
+
+### Lab 8
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError: pandas` | `pip install -r requirements.txt` |
+| Prefect import error | Install prefect: `pip install prefect>=2.14.0` |
+| Prefect API server timeout | Wait for first run to complete (starts temp server) |
+| Task retry not working | Check Prefect version is 2.14+ |
+
 ---
 
 ## 📝 Requirements
@@ -414,6 +689,33 @@ python -m pytest tests -v
 ### Lab 4
 - Python 3.10+
 - pandas >= 2.0.0
+- pytest >= 7.0.0
+- Ollama (optional, for AI features)
+
+### Lab 5
+- Python 3.10+
+- pandas >= 2.0.0
+- pytest >= 7.0.0
+- Ollama (optional, for AI features)
+
+### Lab 6
+- Python 3.10+
+- pandas >= 2.0.0
+- pytest >= 7.0.0
+- Ollama (optional, for AI features)
+
+### Lab 7
+- Python 3.10+
+- PySpark >= 3.4.0
+- pandas >= 2.0.0
+- pytest >= 7.0.0
+- Java JDK 11 or 17
+- Ollama (optional, for AI features)
+
+### Lab 8
+- Python 3.10+
+- pandas >= 2.0.0
+- prefect >= 2.14.0
 - pytest >= 7.0.0
 - Ollama (optional, for AI features)
 
