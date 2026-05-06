@@ -1,0 +1,7 @@
+app_name: SmartAgPipeline
+data_dir: data
+bronze_path: output/bronze
+silver_path: output/silver
+gold_path: output/gold
+watermark_path: output/watermark.txt
+initial_watermark: "2023-12-31"

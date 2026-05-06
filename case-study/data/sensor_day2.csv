@@ -1,0 +1,3 @@
+sensor_id,field_id,temperature,moisture,humidity,timestamp
+1,F1,32,50,40,2024-01-02
+3,F3,36,45,30,2024-01-02

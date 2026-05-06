@@ -113,6 +113,19 @@ labSolution/
     │   └── shipments.csv
     ├── genai/                # Self-contained Ollama module
     └── tests/
+
+└── case-study/               # Case Study: Smart Agriculture
+    ├── README.md
+    ├── requirements.txt
+    ├── data/
+    │   ├── sensor_day1.csv
+    │   ├── sensor_day2.csv   # Schema evolution (adds humidity)
+    │   └── fields.csv
+    ├── pipeline/
+    │   ├── main.py           # Medallion + AI alert thresholds
+    │   └── prefect_flow.py   # Prefect orchestration
+    ├── genai/                # Self-contained Ollama module
+    └── tests/
 ```
 
 ---
@@ -316,6 +329,38 @@ python -m pytest tests -v
 
 ---
 
+### Case Study — Smart Agriculture (PySpark Medallion)
+
+```bash
+cd case-study
+pip install -r requirements.txt
+
+cd pipeline
+
+# Full medallion pipeline (Bronze → Silver → Gold)
+python main.py
+
+# With AI-driven alert thresholds
+python main.py --ai --intent "monitor for heat stress with stricter thresholds"
+
+# Prefect orchestration
+python prefect_flow.py
+
+# Run tests
+cd ..
+python -m pytest tests -v
+```
+
+**Prerequisites:** Java JDK 11 or 17 (for PySpark)
+
+**Outputs:**
+- `output/bronze/` — Incremental sensor data with schema evolution
+- `output/silver/` — Cleaned data partitioned by field_id
+- `output/gold/alerts/` — Alerts (High Temp / Low Moisture / Normal)
+- `output/gold/field_summary/` — Aggregated metrics by field
+
+---
+
 ## 🤖 AI Integration (Ollama)
 
 All eight labs support **runtime AI configuration** via Ollama:
@@ -377,6 +422,17 @@ The AI suggests workflow parameters:
 - `ingest_retries`: Retries for data ingestion
 - `clean_retries`: Retries for data cleaning
 
+### Case Study — AI Alert Thresholds
+
+The AI suggests agriculture monitoring thresholds:
+- `high_temp_threshold`: Temperature above which to alert (default: 35°C)
+- `low_moisture_threshold`: Moisture below which to alert (default: 40%)
+
+Example intents:
+- `"stricter monitoring"` → Lower thresholds for more sensitive alerts
+- `"monitor for heat stress"` → Emphasize temperature threshold
+- `"drought monitoring"` → Emphasize moisture threshold
+
 ### Environment Variables
 
 | Variable | Description | Default |
@@ -406,6 +462,7 @@ cd ../lab5 && python pipeline.py --ai  # Lab 5
 cd ../lab6 && python pipeline.py --ai  # Lab 6
 cd ../lab7 && python pipeline.py --ai  # Lab 7
 cd ../lab8 && python pipeline.py --ai  # Lab 8
+cd ../case-study/pipeline && python main.py --ai  # Case Study
 ```
 
 ---
@@ -519,6 +576,22 @@ python -m pytest tests -v
 
 **Note:** Tests validate pure functions only—no Prefect runtime required. Fast execution.
 
+### Case Study Tests
+```bash
+cd case-study
+python -m pytest tests -v
+```
+
+**Test Coverage:**
+- `test_alert_for_reading()` — Alert logic with custom thresholds
+- `test_config_loads()` — Config file validation
+- `test_data_files_exist()` — Data file presence
+- `test_watermark_functions()` — Read/write watermark
+- `test_alert_config_defaults()` — AI config fallbacks
+- `test_genai_module_imports()` — GenAI module validation
+
+**Note:** Tests validate pure functions—no Spark/Prefect runtime required.
+
 ---
 
 ## 📚 Concepts Demonstrated
@@ -577,6 +650,15 @@ python -m pytest tests -v
 - ✅ **Flow composition**: Clean DAG dependencies
 - ✅ **AI retry config**: Configurable retry counts
 
+### Case Study — Smart Agriculture (Integrated)
+- ✅ **Full medallion flow**: Bronze → Silver → Gold layers
+- ✅ **CDC watermarking**: Incremental loading with timestamp tracking
+- ✅ **Schema evolution**: `unionByName` + `mergeSchema` for column changes
+- ✅ **Broadcast enrichment**: Small dimension table joins
+- ✅ **Alert logic**: Temperature/moisture thresholds
+- ✅ **AI-driven thresholds**: Runtime alert configuration
+- ✅ **Prefect orchestration**: Stage-by-stage flow control
+
 ### AI Integration Patterns
 - ✅ Natural language → structured JSON
 - ✅ Runtime parameter injection
@@ -597,7 +679,8 @@ python -m pytest tests -v
 8. **Explore Lab 6** — Handle schema evolution scenarios
 9. **Optimize with Lab 7** — Learn Spark performance tuning
 10. **Orchestrate with Lab 8** — Build resilient workflows with Prefect
-11. **Review `genai/` modules** — Learn safe AI integration patterns
+11. **Complete Case Study** — Apply all patterns together (CDC + schema evolution + broadcast + AI alerts)
+12. **Review `genai/` modules** — Learn safe AI integration patterns
 
 ---
 
@@ -659,6 +742,16 @@ python -m pytest tests -v
 | Prefect API server timeout | Wait for first run to complete (starts temp server) |
 | Task retry not working | Check Prefect version is 2.14+ |
 
+### Case Study
+| Issue | Solution |
+|-------|----------|
+| `JAVA_HOME` / Spark errors | Install JDK 11/17 and add to PATH |
+| `java -version` fails | Verify Java installation |
+| PySpark import error | `pip install -r requirements.txt` |
+| Schema evolution fails | Ensure sensor_day2.csv adds humidity column |
+| Watermark not updating | Check file permissions on `output/watermark.txt` |
+| First run slow | Normal—Spark takes 30-60s to initialize |
+
 ---
 
 ## 📝 Requirements
@@ -716,6 +809,16 @@ python -m pytest tests -v
 - pandas >= 2.0.0
 - prefect >= 2.14.0
 - pytest >= 7.0.0
+- Ollama (optional, for AI features)
+
+### Case Study
+- Python 3.10+
+- PySpark >= 3.4.0
+- pandas >= 2.0.0
+- prefect >= 2.14.0
+- pytest >= 7.0.0
+- PyYAML >= 6.0
+- Java JDK 11 or 17
 - Ollama (optional, for AI features)
 
 ---
