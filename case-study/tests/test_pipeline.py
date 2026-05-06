@@ -61,9 +61,9 @@ def test_alert_config_defaults():
 
 def test_genai_module_imports():
     """Verify genai module can be imported."""
+    import sys
     sys_path = list(sys.path)
     try:
-        import sys
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
         from genai.ollama_client import ask_alert_config
         from genai.json_extract import extract_json
