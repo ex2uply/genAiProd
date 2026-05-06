@@ -57,6 +57,25 @@ labSolution/
         └── output/           # Generated on run
             ├── revenue.csv
             └── daily_sales.csv
+
+└── lab4/                     # Lab 4: Banking Pipeline (Modular Scaffold)
+    ├── README.md
+    ├── requirements.txt
+    ├── data/
+    │   └── transactions.csv
+    └── banking_pipeline/
+        ├── src/              # Modular package structure
+        │   ├── main.py       # Entrypoint with AI fraud config
+        │   ├── load.py
+        │   ├── transform.py
+        │   ├── fraud.py
+        │   ├── save.py
+        │   └── genai/        # Self-contained Ollama module
+        ├── tests/
+        │   └── test_pipeline.py
+        └── output/
+            ├── clean.csv
+            └── agg.csv
 ```
 
 ---
@@ -144,9 +163,34 @@ python -m pytest tests -v
 
 ---
 
+### Lab 4 — Banking Pipeline (Modular Scaffold)
+
+```bash
+cd lab4
+pip install -r requirements.txt
+
+cd banking_pipeline/src
+
+# Standard mode
+python main.py
+
+# AI-enabled mode (requires Ollama)
+python main.py --ai --intent "Lower fraud threshold to 500 for stricter detection"
+
+# Run tests
+cd ..
+python -m pytest tests -v
+```
+
+**Outputs:**
+- `output/clean.csv` — Cleaned transactions with `is_fraud` flag
+- `output/agg.csv` — Total amounts per account
+
+---
+
 ## 🤖 AI Integration (Ollama)
 
-All three labs support **runtime AI configuration** via Ollama:
+All four labs support **runtime AI configuration** via Ollama:
 
 ### How It Works
 
@@ -172,6 +216,12 @@ The AI suggests retail data cleaning strategies:
 - `price_missing_fill`: Number to fill null prices (default: 0)
 - `filter_non_positive_price`: Boolean to filter rows with price <= 0
 
+### Lab 4 — AI Fraud Detection
+
+The AI suggests fraud detection parameters:
+- `fraud_threshold`: Number above which transactions are flagged (default: 800)
+- `missing_fill`: Number to fill missing amounts (default: 0)
+
 ### Environment Variables
 
 | Variable | Description | Default |
@@ -196,6 +246,7 @@ ollama pull llama3
 python pipeline.py --ai  # Lab 1
 cd ../lab2/pipeline && python main.py --ai  # Lab 2
 cd ../lab3/pipeline && python main.py --ai  # Lab 3
+cd ../lab4/banking_pipeline/src && python main.py --ai  # Lab 4
 ```
 
 ---
@@ -239,6 +290,20 @@ python -m pytest tests -v
 - `test_revenue_calculation()` — Revenue calculations
 - `test_cleaning_logic()` — Data cleaning validation
 
+### Lab 4 Tests
+```bash
+cd lab4/banking_pipeline
+python -m pytest tests -v
+```
+
+**Test Coverage:**
+- `test_data_loaded()` — Input data verification
+- `test_transactions_csv_exists()` — Data file presence
+- `test_pipeline_writes_outputs()` — Full pipeline execution
+- `test_fraud_detection()` — Fraud flag logic
+- `test_clean_data()` — Data cleaning validation
+- `test_ai_fraud_spec()` — AI parameter application
+
 ---
 
 ## 📚 Concepts Demonstrated
@@ -265,6 +330,13 @@ python -m pytest tests -v
 - ✅ Revenue aggregation by category
 - ✅ Daily sales reporting
 
+### Lab 4 — Modular Package Architecture
+- ✅ **Modular `src/` package** structure
+- ✅ **Separation of concerns**: load, transform, fraud, save
+- ✅ Fraud detection with configurable thresholds
+- ✅ Aggregation by account
+- ✅ AI-augmented fraud configuration
+
 ### AI Integration Patterns
 - ✅ Natural language → structured JSON
 - ✅ Runtime parameter injection
@@ -280,7 +352,8 @@ python -m pytest tests -v
 3. **Move to Lab 2** — Explore PySpark medallion architecture
 4. **Run Prefect flow** — Understand pipeline orchestration
 5. **Try Lab 3** — Apply patterns to retail data workflow
-6. **Review `genai/` modules** — Learn safe AI integration patterns
+6. **Move to Lab 4** — Understand modular package architecture
+7. **Review `genai/` modules** — Learn safe AI integration patterns
 
 ---
 
@@ -305,6 +378,13 @@ python -m pytest tests -v
 | `ModuleNotFoundError: pandas` | `pip install -r requirements.txt` |
 | Revenue values seem off | Check if zero-price rows are being filtered |
 
+### Lab 4
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError: pandas` | `pip install -r requirements.txt` |
+| `ImportError` for genai | Ensure running from `banking_pipeline/src` directory |
+| Fraud threshold not changing | Verify AI intent is being passed or use `--ai` flag |
+
 ---
 
 ## 📝 Requirements
@@ -326,6 +406,12 @@ python -m pytest tests -v
 - Ollama (optional, for AI features)
 
 ### Lab 3
+- Python 3.10+
+- pandas >= 2.0.0
+- pytest >= 7.0.0
+- Ollama (optional, for AI features)
+
+### Lab 4
 - Python 3.10+
 - pandas >= 2.0.0
 - pytest >= 7.0.0
